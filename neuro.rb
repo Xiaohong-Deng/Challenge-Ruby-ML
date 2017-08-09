@@ -60,15 +60,16 @@ class NeuralNetwork
 	##############################################
 	protected
 		def back_and_forward_prop(x, y)
+			# byebug
 			x0 = Array.new(x.row_size, 1)
-			x = matrix.columns(x.transpose.to_a.unshift(x0))
+			x = Matrix.columns(x.transpose.to_a.unshift(x0))
 			weights_ij = init_weights(x.column_size, @hidden_nodes)
 			weights_jk = init_weights(@hidden_nodes+1, 1)
 			@iteration.times do
 				row_to_pick = rand(x.row_size+1)
-				x_rand = x.row(row_to_pick)
+				x_rand = Matrix.rows([x.row(row_to_pick)])
 				y_rand = y.row(row_to_pick)
-				x_hidden, output, s_output, s_hidden = propagate(x, weights_ij, weights_jk)
+				x_hidden, output, s_output, s_hidden = propagate(x_rand, weights_ij, weights_jk)
 				delta_hidden, delta_output = back_propagate(x_rand, y_rand, x_hidden, output, weight_jk, S_output, S_hidden)
 				grad_matrix_ij = @eta * (delta_hidden * x_rand).transpose
 				weights_ij -= grad_matrix_ij
@@ -82,6 +83,11 @@ class NeuralNetwork
 		def propagate(x, weights_ij, weights_jk)
 			# applies the input to the network
 			# this is the forward propagation step
+			s_hidden = x * weights_ij
+			x_hidden = Matrix.rows([[1] + s_hidden.row(0).map { |e| Math.tanh(e) }.to_a])
+			s_output = x_hidden * weights_jk
+			byebug
+			output = Math.tanh(s_output.row(0)[0])
 		end
 
 		##############################################

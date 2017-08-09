@@ -57,7 +57,7 @@ y_train = Matrix.rows(y.values_at(*train_samples))
 
 x_test = Matrix.rows(x.values_at(*test_samples))
 y_test = Matrix.rows(y.values_at(*test_samples))
-byebug
+# byebug
 # creates a new neural network
 nn = NeuralNetwork.new()
 
