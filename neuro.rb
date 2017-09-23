@@ -130,6 +130,8 @@ class NeuralNetwork
 			delta_output = Matrix.rows(Array.new(y.row_size, Array.new(y.column_size, 0)))
 			derv_tanh_s_op = derv_tanh(s_output)
 			output.each_with_index { |e, row, col| delta_output[row, col] = -2 * (y[row, col] - e) * derv_tanh_s_op[row, col] }
+			# no delta for constant node because j is the number of hidden nodes in wij, constant node is constant, no need for w
+			# to compute it, so we only need #hidden nodes of delta for hidden layer
 			dh_size = x_hidden.column_size - 1
 			delta_hidden = Matrix.rows(Array.new(1, Array.new(dh_size, 0)))
 			derv_tanh_s_hd = derv_tanh(s_hidden)
@@ -143,8 +145,8 @@ class NeuralNetwork
 
 	private
 		def init_weights(rows, cols)
-			rand_num = 2 * @init_w_range * rand - @init_w_range
-			Matrix.rows(Array.new(rows) { Array.new(cols) { rand_num } })
+			rand_num = lambda { 2 * @init_w_range * rand - @init_w_range }
+			Matrix.rows(Array.new(rows) { Array.new(cols) { rand_num.call } })
 		end
 
 		def derv_tanh(s)
